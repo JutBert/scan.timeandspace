@@ -60,8 +60,6 @@ header {
     justify-content: space-between;
     align-items: center;
     padding-bottom: 2rem;
-    border-bottom: 1px solid #333;
-    margin-bottom: 2rem;
 }
 .logo { display: flex; align-items: center; font-weight: 700; font-size: 1.2rem; }
 .logo a { display: flex; align-items: center; text-decoration: none; }
@@ -241,6 +239,11 @@ body.subpage .terminal-container {
     flex: 1;
 }
 
+body.subpage header {
+    border-bottom: 1px solid #333;
+    margin-bottom: 2rem;
+}
+
 
 body.subpage .blink {
     animation-name: blink-anim;
@@ -408,7 +411,7 @@ body.subpage footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0 60px;
+    padding-bottom: 2rem;
     position: relative;
     z-index: 10;
 }
