@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MetaSchaf-Scan — Welches unsichtbare Programm steuert dich?</title>
+<title>MetaSchaf-Scan — Wie viel Schaf steckt in dir?</title>
 <link rel="icon" type="image/png" href="logo.png">
-<meta name="description" content="Finde in 5 Minuten heraus, welches unbewusste Muster dein Verhalten steuert — und wer davon profitiert.">
-<meta property="og:title" content="MetaSchaf-Scan — Welches unsichtbare Programm steuert dich?">
-<meta property="og:description" content="12 Fragen. 5 Minuten. Ein Ergebnis, das sitzt.">
+<meta name="description" content="7 Fragen. 2 Minuten. Ein Ergebnis, das unbequem wird. Finde dein Schaf-Level — und welcher Archetyp dich steuert.">
+<meta property="og:title" content="MetaSchaf-Scan — Wie viel Schaf steckt in dir?">
+<meta property="og:description" content="7 Fragen. 2 Minuten. Dein Schaf-Level in Prozent.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,19 +40,19 @@
 <div id="intro">
   <div class="container">
     <div class="intro-badge animate-fade-up delay-1">MetaSchaf-Scan</div>
-    <h1 class="animate-fade-up delay-2">Welches unsichtbare Programm <span id="typewriter-text"></span><span id="typewriter-cursor"></span></h1>
+    <h1 class="animate-fade-up delay-2">Wie viel Schaf <span id="typewriter-text"></span><span id="typewriter-cursor"></span></h1>
     <p class="intro-text animate-fade-up delay-3">
-      Du funktionierst. Du machst deinen Job, triffst Entscheidungen, lebst dein Leben.
-      Aber hast du dich mal gefragt, wer eigentlich auf den Kn&ouml;pfen sitzt?
+      Du denkst, du entscheidest frei. Dein Job, deine Haltung, dein Lebensstil.
+      Aber was, wenn die meisten deiner Entscheidungen nicht von dir kommen?
     </p>
     <p class="intro-text animate-fade-up delay-4">
-      Dieser Scan zeigt dir das Muster, das unter deinem Alltag l&auml;uft &mdash;
-      und wer davon profitiert, dass du es nicht siehst.
+      Dieser Scan zeigt dir das unsichtbare Programm unter deinem Alltag &mdash;
+      und welcher Schaf-Typ du bist.
     </p>
     <div class="intro-details animate-fade-up delay-5">
-      <span><span class="dot"></span> 12 Fragen</span>
-      <span><span class="dot"></span> 5 Minuten</span>
-      <span><span class="dot"></span> Pers&ouml;nliches Ergebnis</span>
+      <span><span class="dot"></span> 7 Fragen</span>
+      <span><span class="dot"></span> 2 Minuten</span>
+      <span><span class="dot"></span> Dein Schaf-Level in %</span>
     </div>
     <button class="btn-start animate-fade-up delay-6" onclick="startScan()">
       Scan starten <span class="arrow">&rarr;</span>
@@ -68,7 +68,7 @@
         <img src="logo.png" alt="Logo">
         <span class="scan-logo-text">MetaSchaf</span>
       </div>
-      <div class="scan-counter" id="scanCounter">01 / 12</div>
+      <div class="scan-counter" id="scanCounter">01 / 07</div>
     </div>
     <div id="questionArea"></div>
   </div>
@@ -78,7 +78,7 @@
 <div id="processing">
   <div class="processing-content">
     <div class="processing-ring"></div>
-    <div class="processing-text" id="processingText">Muster werden analysiert...</div>
+    <div class="processing-text" id="processingText">Herdenmuster werden analysiert...</div>
     <div class="processing-detail" id="processingDetail"></div>
   </div>
 </div>
@@ -88,6 +88,7 @@
   <div class="container">
     <div class="result-intro">
       <div class="label">Dein Scan-Ergebnis</div>
+      <div id="schafLevelDisplay"></div>
       <h2 id="resultTitle"></h2>
     </div>
     <div id="resultContent"></div>
@@ -115,12 +116,156 @@
   </div>
 </footer>
 
+<!-- ======== INLINE STYLE FOR SCHAF-LEVEL ======== -->
+<style>
+.schaf-level-big {
+  font-family: var(--font-system);
+  font-size: clamp(3rem, 10vw, 5rem);
+  font-weight: 700;
+  color: var(--accent-color);
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 0 30px rgba(255, 20, 147, 0.3);
+}
+.schaf-level-label {
+  font-family: var(--font-system);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--muted-color);
+  margin-bottom: 28px;
+}
+.schaf-level-bar-wrap {
+  max-width: 400px;
+  margin: 0 auto 32px;
+}
+.schaf-level-bar-track {
+  height: 8px;
+  background: var(--surface2);
+  overflow: hidden;
+  position: relative;
+}
+.schaf-level-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), #ffd700, var(--accent-color), var(--red));
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0;
+}
+.schaf-level-scale {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-system);
+  font-size: 0.65rem;
+  color: var(--muted-color);
+  margin-top: 6px;
+}
+
+/* === SHARE CARD (Screenshot-tauglich) === */
+.share-card {
+  background: var(--bg-color);
+  border: 1px solid var(--accent-color);
+  padding: 32px 28px 24px;
+  margin-bottom: 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+.share-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+}
+.share-card-brand {
+  font-family: var(--font-system);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--muted-color);
+  margin-bottom: 20px;
+}
+.share-card-level {
+  font-family: var(--font-system);
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  font-weight: 700;
+  color: var(--accent-color);
+  line-height: 1;
+  margin-bottom: 4px;
+  text-shadow: 0 0 40px rgba(255, 20, 147, 0.25);
+}
+.share-card-sublabel {
+  font-family: var(--font-system);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--muted-color);
+  margin-bottom: 20px;
+}
+.share-card-type {
+  font-family: var(--font-system);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.share-card-oneliner {
+  font-size: 0.88rem;
+  color: var(--muted-color);
+  font-style: italic;
+  max-width: 420px;
+  margin: 0 auto 20px;
+  line-height: 1.5;
+}
+.share-card-bar-wrap {
+  max-width: 300px;
+  margin: 0 auto 16px;
+}
+.share-card-bar-track {
+  height: 6px;
+  background: var(--surface2);
+  overflow: hidden;
+}
+.share-card-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), #ffd700, var(--accent-color), var(--red));
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0;
+}
+.share-card-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-system);
+  font-size: 0.55rem;
+  color: var(--muted-color);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.share-card-url {
+  font-family: var(--font-system);
+  font-size: 0.6rem;
+  color: var(--accent-color);
+  opacity: 0.6;
+  margin-top: 16px;
+  letter-spacing: 1px;
+}
+.share-card-hint {
+  font-family: var(--font-system);
+  font-size: 0.6rem;
+  color: var(--muted-color);
+  margin-top: 16px;
+  opacity: 0.5;
+}
+</style>
+
 <script>
 // =======================================
 // TYPEWRITER
 // =======================================
 (function() {
-  var text = "steuert dich?";
+  var text = "steckt in dir?";
   var el = document.getElementById('typewriter-text');
   var i = 0;
   setTimeout(function() {
@@ -139,210 +284,211 @@
 })();
 
 // =======================================
-// DATA
+// 8 SCHAF-ARCHETYPEN
 // =======================================
-var PROGRAMS = {
-  beweis: {
-    name: 'Der Beweis-Modus',
-    subtitle: 'Du lebst, um zu beweisen, dass du genug bist.',
-    description: 'Unter deinem Alltag l\u00e4uft ein Programm, das st\u00e4ndig fl\u00fcstert: \u201eDu musst zeigen, dass du es wert bist.\u201c Nicht laut, nicht dramatisch \u2014 aber bei jeder Entscheidung mit am Tisch. Du sagst Ja zu Projekten, die dich auffressen. Du arbeitest l\u00e4nger als n\u00f6tig. Du vergleichst dich mit Menschen, die du nicht mal magst. Nicht weil du das willst \u2014 sondern weil dieses Programm es verlangt.',
+var SCHAFS = {
+  spam: {
+    name: 'Spamschaf',
+    emoji: '\uD83D\uDCE2',
+    subtitle: 'Du l\u00e4ufst jedem Trend hinterher \u2014 und verwechselst Aufmerksamkeit mit Bedeutung.',
+    description: 'Dein Feed bestimmt deine Meinung. Dein Content bestimmt deinen Wert. Du teilst, postest, kommentierst \u2014 nicht weil du etwas zu sagen hast, sondern weil Stille sich anf\u00fchlt wie Irrelevanz. Das Programm, das dich steuert, hei\u00dft: Wer nicht sichtbar ist, existiert nicht.',
     patterns: [
-      'Du sagst Ja, obwohl du Nein meinst \u2014 weil Nein sich anf\u00fchlt wie Versagen',
-      'Du arbeitest h\u00e4rter als n\u00f6tig, und trotzdem f\u00fchlt es sich nie \u201egenug\u201c an',
-      'Komplimente prallen ab, aber Kritik bleibt tagelang kleben',
-      'Du vergleichst dich st\u00e4ndig \u2014 und verlierst meistens',
-      'Pausen f\u00fchlen sich wie Faulheit an'
+      'Du kennst Trends, bevor du wei\u00dft, warum sie dich interessieren',
+      'Du formulierst Gedanken im Kopf schon als Post',
+      'Stille auf deinen Kan\u00e4len macht dich nerv\u00f6s',
+      'Du konsumierst mehr Content \u00fcber Leben als du lebst'
     ],
-    exploit: 'Unternehmen lieben den Beweis-Modus. \u201eGeh die extra Meile.\u201c \u201eSei ein Top-Performer.\u201c Social Media gibt dir Likes als Beweis-Punkte. Die Selbstoptimierungsindustrie verkauft dir das n\u00e4chste Level. Und du kaufst \u2014 nicht weil du es brauchst, sondern weil das Programm sagt: noch nicht genug.',
-    exploitExamples: 'Hustle-Culture \u00b7 Performance-Reviews \u00b7 Like-Z\u00e4hler \u00b7 Titel als Identit\u00e4t \u00b7 \u201eGib 110%\u201c',
-    unlock: 'Der erste Schritt ist nicht, weniger zu arbeiten. Es ist zu merken, wann du arbeitest, um etwas zu beweisen \u2014 und wann, weil du es wirklich willst. Dieser Unterschied ver\u00e4ndert alles.',
-    unlockTip: 'Achte diese Woche auf Momente, in denen du etwas tust und dabei an eine unsichtbare Jury denkst. Wer sitzt in dieser Jury? Und wer hat sie da hingesetzt?'
+    exploit: 'Algorithmen sind auf dich trainiert. Je mehr du reagierst, desto mehr f\u00fctterst du die Maschine. Aufmerksamkeit ist die W\u00e4hrung \u2014 und du zahlst mit deiner Zeit, ohne es zu merken.',
+    exploitExamples: 'Algorithmen \u00b7 Content-Industrie \u00b7 Engagement-Metriken \u00b7 FOMO-Marketing',
+    unlock: 'Aufmerksamkeit ist nicht Bedeutung. Die Frage ist: Was w\u00fcrdest du denken, wenn niemand zuschaut?',
+    unlockTip: 'L\u00f6sche eine Social-Media-App f\u00fcr 48 Stunden. Nicht f\u00fcr immer. Nur 48 Stunden. Beobachte, wie oft dein Daumen sie sucht.'
   },
-  harmonie: {
-    name: 'Der Harmonie-Modus',
-    subtitle: 'Du h\u00e4ltst den Frieden \u2014 auf deine Kosten.',
-    description: 'Unter deinem Alltag l\u00e4uft ein Programm, das Konflikte um jeden Preis vermeidet. Es f\u00fchlt sich an wie Freundlichkeit, R\u00fccksicht, Empathie \u2014 aber eigentlich ist es ein Deal: Du gibst nach, damit es nicht unangenehm wird. Du schluckst Dinge runter, die gesagt werden m\u00fcssten. Du sp\u00fcrst genau, was andere brauchen \u2014 aber hast verlernt, was du selbst brauchst.',
+  leit: {
+    name: 'Leitschaf',
+    emoji: '\uD83D\uDC51',
+    subtitle: 'Du f\u00fchrst \u2014 aber wohin eigentlich?',
+    description: 'Du hast Meinungen, Haltung, Pr\u00e4senz. Andere h\u00f6ren auf dich. Aber hast du dich mal gefragt, ob du wirklich f\u00fchrst \u2014 oder nur weiter vorne in der gleichen Herde l\u00e4ufst? Dein Programm hei\u00dft: F\u00fchrung als Identit\u00e4t. Solange du vorne stehst, musst du dich nicht fragen, ob die Richtung stimmt.',
     patterns: [
-      'Du merkst schneller, was andere f\u00fchlen, als was du selbst f\u00fchlst',
-      'Streit f\u00fchlt sich existenzbedrohend an \u2014 als w\u00fcrde die Beziehung daran zerbrechen',
-      'Du entschuldigst dich f\u00fcr Dinge, die nicht deine Schuld sind',
-      'Du schluckst \u00c4rger runter, bis er als Ersch\u00f6pfung wiederkommt',
-      'Wenn du Nein sagst, kommt sofort das schlechte Gewissen'
+      'Du \u00fcbernimmst automatisch die F\u00fchrung \u2014 auch wenn niemand fragt',
+      'Wenn andere die Kontrolle haben, wirst du unruhig',
+      'Du definierst dich \u00fcber Verantwortung und Einfluss',
+      'Allein sein f\u00fchlt sich an wie Bedeutungsverlust'
     ],
-    exploit: 'Dein Harmonie-Modus macht dich zum perfekten Ziel f\u00fcr emotionale Manipulation. \u201eF\u00fcr das Team.\u201c \u201eDu bist doch so verst\u00e4ndnisvoll.\u201c Schuldgef\u00fchl-Marketing funktioniert bei dir besonders gut. Und in Beziehungen \u00fcbernimmst du die emotionale Arbeit \u2014 weil das Programm sagt: Wenn du aufh\u00f6rst, bricht alles zusammen.',
-    exploitExamples: 'Guilt-Trips \u00b7 \u201eTeamplayer\u201c-Kultur \u00b7 Toxische Beziehungsdynamiken \u00b7 Emotionale Arbeit als Pflicht',
-    unlock: 'Harmonie ist nicht das Problem. Das Problem ist, dass du glaubst, sie geht kaputt, wenn du ehrlich bist. Echte Verbindung entsteht nicht durch Nachgeben \u2014 sondern durch die Bereitschaft, auch die unbequeme Wahrheit auszusprechen.',
-    unlockTip: 'Bemerke diese Woche einmal bewusst, wenn du etwas runterschluckst. Frag dich nicht, ob du es sagen sollst \u2014 frag dich nur: Was genau wollte ich gerade sagen? Schreib es auf. Nur f\u00fcr dich.'
+    exploit: 'Leadership-Industrie, Management-Kurse, \u201eBe a Leader\u201c-Mantras. Du bist der perfekte Kunde f\u00fcr alles, was Kontrolle als Tugend verkauft.',
+    exploitExamples: 'Leadership-Seminare \u00b7 \u201eF\u00fchrungspers\u00f6nlichkeit\u201c \u00b7 Titel-Denken \u00b7 Kontrollbed\u00fcrfnis',
+    unlock: 'Echte F\u00fchrung beginnt nicht damit, andere zu lenken. Sie beginnt damit, die eigene Richtung zu hinterfragen.',
+    unlockTip: 'Lass diese Woche einmal bewusst jemand anderen entscheiden. Nicht korrigieren. Nicht nachsteuern. Einfach loslassen. Was passiert in dir?'
   },
-  kontrolle: {
-    name: 'Der Kontroll-Modus',
-    subtitle: 'Du h\u00e4ltst alles zusammen \u2014 weil du glaubst, es f\u00e4llt sonst auseinander.',
-    description: 'Unter deinem Alltag l\u00e4uft ein Programm, das st\u00e4ndig vorausdenkt, absichert und plant. Es f\u00fchlt sich an wie Verantwortung und Klugheit \u2014 aber dahinter steckt die \u00dcberzeugung, dass Kontrollverlust gleichbedeutend mit Katastrophe ist. Du kannst nicht loslassen, nicht delegieren, nicht abwarten. Alles muss durch deine H\u00e4nde.',
+  insta: {
+    name: 'Insta-Schaf',
+    emoji: '\uD83D\uDCF8',
+    subtitle: 'Dein Selbstwert l\u00e4dt gerade... 47 Likes.',
+    description: 'Du lebst nicht f\u00fcr Likes. Nat\u00fcrlich nicht. Aber wenn ein Post floppt, f\u00fchlt es sich trotzdem an, als h\u00e4ttest DU gefloppt. Dein Programm verbindet Sichtbarkeit mit Wert. Und Unsichtbarkeit mit Wertlosigkeit. Das ist kein Instagram-Problem. Das ist ein Identit\u00e4tsproblem mit einer App als Symptom.',
     patterns: [
-      'Du planst drei Schritte voraus \u2014 auch wenn niemand darum gebeten hat',
-      'Wenn andere Dinge anders machen als du, macht dich das unruhig',
-      '\u00dcberraschungen sind f\u00fcr dich kein Geschenk, sondern ein Problem',
-      'Du checkst Dinge doppelt und dreifach \u2014 sicher ist sicher',
-      'Delegation f\u00fchlt sich an wie Kontrollverlust, nicht wie Teamarbeit'
+      'Du checkst Reaktionen auf Posts \u00f6fter als du zugeben w\u00fcrdest',
+      'Du vergleichst dein Leben mit kuratierten Versionen anderer Leben',
+      'Gute Momente sind erst \u201eecht\u201c, wenn du sie teilst',
+      'Du f\u00fchlst dich schuldig f\u00fcr die Zeit, die du scrollst \u2014 und scrollst trotzdem'
     ],
-    exploit: 'Die Angst vor Kontrollverlust ist ein Milliarden-Gesch\u00e4ft. Versicherungen, Tracking-Apps, Produktivit\u00e4ts-Tools, Ern\u00e4hrungspl\u00e4ne \u2014 sie alle versprechen: Wenn du genug kontrollierst, kann nichts schiefgehen. Und du kaufst, weil das Programm sagt: Noch ein System, noch ein Plan, dann bin ich sicher.',
-    exploitExamples: 'Versicherungsmarketing \u00b7 Tracking-Obsession \u00b7 Produktivit\u00e4ts-Industrie \u00b7 \u201ePlan B f\u00fcr den Plan B\u201c',
-    unlock: 'Kontrolle gibt dir das Gef\u00fchl von Sicherheit. Aber echte Sicherheit kommt nicht davon, alles zu kontrollieren \u2014 sondern davon, zu wissen, dass du auch mit dem Unkontrollierten umgehen kannst.',
-    unlockTip: 'Lass diese Woche bewusst eine Kleinigkeit unkontrolliert. Nicht den gro\u00dfen Plan \u2014 nur eine winzige Sache. Beobachte, was in dir passiert. Das Gef\u00fchl, das aufkommt, ist das Programm.'
+    exploit: 'Social-Media-Plattformen sind Casinos f\u00fcr dein Nervensystem. Der Like ist der Jackpot. Und du spielst \u2014 weil das Programm sagt: Ohne Best\u00e4tigung bist du nichts.',
+    exploitExamples: 'Like-\u00d6konomie \u00b7 Vergleichskultur \u00b7 Filter-Realit\u00e4t \u00b7 Dopamin-Schleifen',
+    unlock: 'Dein Wert hat keine Likes. Er braucht keine. Die Frage ist nicht, wer dir folgt \u2014 sondern ob du dir selbst folgst.',
+    unlockTip: 'Mach etwas Sch\u00f6nes diese Woche und erz\u00e4hl es niemandem. Kein Foto, kein Post. Nur f\u00fcr dich. Sp\u00fcr den Unterschied.'
   },
-  unsichtbar: {
-    name: 'Der Unsichtbar-Modus',
-    subtitle: 'Du bleibst klein \u2014 damit du nie zu gro\u00df scheitern kannst.',
-    description: 'Unter deinem Alltag l\u00e4uft ein Programm, das dich unter dem Radar h\u00e4lt. Du hast gute Ideen, aber sagst sie nicht. Du hast Dinge erreicht, aber sprichst nicht dar\u00fcber. Du k\u00f6nntest mehr, aber irgendetwas in dir sagt: Bleib lieber unten, dort ist es sicher. Es f\u00fchlt sich an wie Bescheidenheit \u2014 aber eigentlich ist es Schutz.',
+  light: {
+    name: 'Light-Schaf',
+    emoji: '\u2728',
+    subtitle: 'Spirituell genug, um nichts mehr zu hinterfragen.',
+    description: 'Du bist \u201eaufgewacht\u201c. Du meditierst, manifestierst, sp\u00fcrst Energien. Aber hast du bemerkt, dass deine Bubble genauso hermetisch ist wie jede andere? Dein Programm tauscht \u201eSystem\u201c gegen \u201eUniversum\u201c und \u201eChef\u201c gegen \u201eHigher Self\u201c \u2014 aber die Struktur ist dieselbe: Anpassung an eine Gruppe, nur mit Kristallen statt Krawatten.',
     patterns: [
-      'Du denkst \u201eDas kann ich nicht\u201c \u2014 noch bevor du es versucht hast',
-      'Wenn du gelobt wirst, wehrst du ab oder schreibst es dem Zufall zu',
-      'Du hast Ideen, aber sagst sie erst, wenn jemand anderes sie ausspricht',
-      'Sichtbarkeit f\u00fchlt sich gef\u00e4hrlich an \u2014 als w\u00fcrde sie Angriffsfl\u00e4che bieten',
-      'Du sabotierst dich in dem Moment, wo Erfolg greifbar wird'
+      'Du erkl\u00e4rst Unangenehmes mit \u201eDas Universum testet mich\u201c',
+      'Kritik an Spiritualit\u00e4t f\u00fchlt sich an wie ein pers\u00f6nlicher Angriff',
+      'Du bist tolerant \u2014 au\u00dfer gegen\u00fcber Menschen, die nicht \u201ebewusst\u201c sind',
+      'Du umgehst Konflikte mit \u201eIch schicke dir Licht\u201c statt mit Klartext'
     ],
-    exploit: 'Der Unsichtbar-Modus wird selten direkt ausgebeutet \u2014 aber er h\u00e4lt dich in Systemen gefangen, die von deiner Kleinheit profitieren. Unternehmen, die dich unterbezahlen, weil du nicht verhandelst. Beziehungen, in denen du dich anpasst. Eine Kultur, die dir sagt: Sei nicht zu viel. Und du gehorchst.',
-    exploitExamples: 'Imposter-Syndrom \u00b7 Vergleichskultur \u00b7 Hierarchien die Anpassung belohnen \u00b7 \u201eBescheidenheit ist eine Tugend\u201c',
-    unlock: 'Unsichtbarkeit ist kein Charakterzug. Es ist eine Schutzstrategie, die du als Kind gelernt hast. Die Frage ist nicht: Wie werde ich sichtbar? Sondern: Was passiert, wenn ich es bin? Meist nichts von dem, was das Programm dir erz\u00e4hlt.',
-    unlockTip: 'Sprich diese Woche einen Gedanken aus, den du normalerweise f\u00fcr dich behalten h\u00e4ttest. Nicht den gr\u00f6\u00dften. Irgendeinen. Und bemerke, was passiert \u2014 drau\u00dfen und drinnen.'
+    exploit: 'Die Wellness-Industrie liebt dich. Retreats, Orakelkarten, Mondrituale \u2014 alles verpackt als Erwachen, verkauft als Konsum. Du bist nicht weniger programmiert. Du hast nur das Betriebssystem gewechselt.',
+    exploitExamples: 'Wellness-Industrie \u00b7 Manifestations-Coaching \u00b7 Retreat-Tourismus \u00b7 Spiritueller Bypassing',
+    unlock: 'Echtes Aufwachen bedeutet nicht, eine neue Erz\u00e4hlung zu finden. Es bedeutet, alle Erz\u00e4hlungen zu hinterfragen \u2014 auch die spirituellen.',
+    unlockTip: 'Wenn du diese Woche eine Situation mit \u201ealles hat einen Sinn\u201c erkl\u00e4ren willst, halte inne. Frag stattdessen: Was f\u00fchle ich gerade wirklich? Ohne Rahmen.'
   },
-  mehr: {
-    name: 'Der Mehr-Modus',
-    subtitle: 'Du optimierst endlos \u2014 weil Ankommen sich anf\u00fchlt wie Stillstand.',
-    description: 'Unter deinem Alltag l\u00e4uft ein Programm, das nie zufrieden ist. Es ist nicht gierig \u2014 es ist rastlos. Kaum hast du etwas erreicht, schaut es schon zum N\u00e4chsten. Kaum f\u00fchlst du dich gut, sagt es: Das reicht noch nicht. Es treibt dich an wie ein Motor ohne Aus-Schalter. Andere nennen es Ambition. Aber du wei\u00dft: Es ist kein Antrieb. Es ist eine Flucht.',
+  meta: {
+    name: 'Meta-Schaf',
+    emoji: '\uD83E\uDDE0',
+    subtitle: 'Du durchschaust alles \u2014 au\u00dfer dich selbst.',
+    description: 'Du wei\u00dft, dass alle Schafe sind. Du analysierst Systeme, durchschaust Manipulation, erkennst Muster. Aber genau diese Distanz ist dein K\u00e4fig. Dein Programm hei\u00dft: Solange ich alles durchschaue, muss ich mich nie wirklich einlassen. Ironie als Schutzschild. Analyse statt Aktion.',
     patterns: [
-      'Du feierst Erfolge nicht \u2014 du hast schon das n\u00e4chste Ziel im Blick',
-      'Ruhe macht dich nerv\u00f6s, nicht entspannt',
-      'Du konsumierst st\u00e4ndig neues Wissen \u2014 ohne es anzuwenden',
-      'Dein Kalender ist voll, und irgendwie bist du stolz darauf',
-      'Das Gef\u00fchl \u201eIch bin angekommen\u201c existiert nicht in deinem Wortschatz'
+      'Du bist der Kluge im Raum \u2014 und trotzdem stecken geblieben',
+      'Du analysierst lieber als du handelst',
+      'Du distanzierst dich mit Ironie, wenn es pers\u00f6nlich wird',
+      'Du baust Frameworks \u00fcber Frameworks \u2014 aber nie etwas Fertiges'
     ],
-    exploit: 'Der Mehr-Modus ist die Lieblingsfrequenz des Kapitalismus. Upgrade. Premium. Next Level. Die Selbstoptimierungs-Industrie ist auf dich zugeschnitten: noch ein Kurs, noch eine Methode, noch ein Tool. FOMO funktioniert bei dir wie ein Zauberspruch. Und du merkst nicht, dass das \u201eMehr\u201c nie ankommt \u2014 weil es nicht soll.',
-    exploitExamples: 'FOMO-Marketing \u00b7 Upgrade-Kultur \u00b7 Abo-Modelle \u00b7 \u201eDas n\u00e4chste Level\u201c \u00b7 Selbstoptimierungsindustrie',
-    unlock: 'Dein Mehr-Modus hat eine gute Seite: Er hat dich hierher gebracht. Aber er kann dich nicht zu dir selbst bringen. Daf\u00fcr brauchst du einen anderen Muskel: die F\u00e4higkeit, mit dem zu sein, was da ist. Nicht weil es perfekt ist \u2014 sondern weil du es bist.',
-    unlockTip: 'Wenn du diese Woche etwas abschlie\u00dft \u2014 egal wie klein \u2014 halte bewusst 30 Sekunden inne. Sag dir nicht: Was kommt jetzt? Sag dir: Das hab ich gemacht. F\u00fchl es. Dann erst weiter.'
+    exploit: 'Kaum jemand verkauft dir direkt etwas. Aber dein Denken-\u00fcber-Denken h\u00e4lt dich in Bewegungslosigkeit \u2014 und das System profitiert von Menschen, die alles verstehen, aber nichts ver\u00e4ndern.',
+    exploitExamples: 'Analyse-Paralyse \u00b7 Zynismus als Lifestyle \u00b7 Intellektuelle \u00dcberlegenheit \u00b7 \u201eIch wei\u00df Bescheid\u201c-Haltung',
+    unlock: 'Durchschauen ist nicht Freiheit. Freiheit ist, trotzdem zu handeln. Die unbequemste Frage f\u00fcr ein Meta-Schaf: Was riskierst du eigentlich?',
+    unlockTip: 'Tu diese Woche eine Sache, die du bisher nur analysiert hast. Nicht perfekt. Nicht durchdacht. Einfach tun. Und beobachte den Widerstand in dir.'
+  },
+  karriere: {
+    name: 'Karriere-Schaf',
+    emoji: '\uD83D\uDCBC',
+    subtitle: 'Du funktionierst. Aber das war nicht die Frage.',
+    description: 'Dein Kalender ist voll. Dein LinkedIn gl\u00e4nzt. Dein Lebenslauf ist eine Erfolgsgeschichte. Aber wenn sonntags Stille einkehrt, sp\u00fcrst du: Irgendetwas stimmt nicht. Dein Programm verwechselt Produktivit\u00e4t mit Identit\u00e4t. Du bist nicht, was du leistest. Aber ohne Leistung wei\u00dft du nicht, wer du bist.',
+    patterns: [
+      'Pausen f\u00fchlen sich an wie Faulheit',
+      'Dein erster Gedanke morgens geh\u00f6rt der To-Do-Liste',
+      'Du definierst dich \u00fcber Job-Titel, Ergebnisse, Effizienz',
+      'Burnout k\u00e4me dir fast wie ein Qualit\u00e4tssiegel vor'
+    ],
+    exploit: 'Die Hustle-Culture ist dein nat\u00fcrlicher Lebensraum. \u201eGrind harder.\u201c \u201eRise and grind.\u201c Unternehmen lieben dich \u2014 weil du dich selbst ausbeutest, bevor sie es tun m\u00fcssen.',
+    exploitExamples: 'Hustle-Culture \u00b7 Performance-Reviews \u00b7 \u201eGib 110%\u201c \u00b7 Overtime als Ehre',
+    unlock: 'Die h\u00e4rteste Frage f\u00fcr ein Karriere-Schaf: Wer bist du, wenn du nichts leistest? Nicht was du tust \u2014 wer du bist.',
+    unlockTip: 'Blockiere einen Abend diese Woche. Kein Plan. Kein Output. Sitz da und mach nichts. Wenn der Drang kommt, \u201ewenigstens etwas Sinnvolles\u201c zu tun: Das ist das Programm.'
+  },
+  safe: {
+    name: 'Safe-Schaf',
+    emoji: '\uD83D\uDD12',
+    subtitle: 'Dein K\u00e4fig ist bequem. Genau das ist das Problem.',
+    description: 'Du vermeidest alles, was wackelt. Konflikte, Risiken, Unbekanntes \u2014 lieber nicht. Dein Programm hei\u00dft: Sicherheit \u00fcber Wahrheit. Es h\u00e4lt dich in Beziehungen, die nicht stimmen. In Jobs, die dich nicht fordern. In einer Komfortzone, die langsam schrumpft.',
+    patterns: [
+      'Du w\u00e4hlst das Bekannte, auch wenn es dich nicht gl\u00fccklich macht',
+      'Risiko f\u00fchlt sich nicht aufregend an, sondern bedrohlich',
+      'Du sagst \u201eMan muss realistisch sein\u201c \u2014 und meinst: \u201eIch habe Angst\u201c',
+      'Du bleibst in Situationen, die \u201eokay\u201c sind, statt etwas Besseres zu suchen'
+    ],
+    exploit: 'Versicherungen, Sparbuch-Mentalit\u00e4t, \u201eSichere dir deine Zukunft\u201c \u2014 die ganze Infrastruktur der Angst ist auf dich zugeschnitten. Du zahlst f\u00fcr Sicherheit, die es nicht gibt.',
+    exploitExamples: 'Angst-Marketing \u00b7 Versicherungsindustrie \u00b7 \u201eJob-Sicherheit\u201c \u00b7 Komfortzone als Lifestyle',
+    unlock: 'Sicherheit ist eine Illusion. Die einzige echte Sicherheit ist zu wissen, dass du mit dem Unsicheren umgehen kannst.',
+    unlockTip: 'Tu diese Woche eine winzige Sache, die sich unbequem anf\u00fchlt. Nicht gef\u00e4hrlich \u2014 nur unbequem. Ein Gespr\u00e4ch, das du aufschiebst. Eine Meinung, die du zur\u00fckh\u00e4ltst. Sag sie.'
+  },
+  upgrade: {
+    name: 'Upgrade-Schaf',
+    emoji: '\uD83D\uDE80',
+    subtitle: 'Neuer Kurs, gleiches Muster. Aber diesmal mit Zertifikat.',
+    description: 'Du optimierst st\u00e4ndig. Neues Buch, neuer Kurs, neuer Ansatz. Aber unter all dem Lernen versteckt sich eine Wahrheit: Du benutzt Weiterentwicklung als Flucht vor dem, was jetzt ist. Dein Programm sagt: Du bist noch nicht fertig. Noch nicht gut genug. Noch ein Upgrade, dann darfst du anfangen.',
+    patterns: [
+      'Du sammelst Wissen, ohne es anzuwenden',
+      'Der n\u00e4chste Kurs verspricht immer den Durchbruch',
+      'Du feierst Abschl\u00fcsse nicht \u2014 du planst schon den n\u00e4chsten',
+      'Stillstand f\u00fchlt sich an wie R\u00fcckschritt'
+    ],
+    exploit: 'Die Selbstoptimierungs-Industrie ist dein Dealer. Upgrade. Premium. Next Level. Du bist der perfekte Abo-Kunde \u2014 weil du glaubst, dass das n\u00e4chste Tool dich endlich \u201efertig\u201c macht.',
+    exploitExamples: 'Selbstoptimierung \u00b7 Kurs-Hopping \u00b7 \u201eNext Level\u201c \u00b7 Abo-Modelle \u00b7 FOMO',
+    unlock: 'Du bist nicht unfertig. Du bist nur s\u00fcchtig nach dem Gef\u00fchl, auf dem Weg zu sein. Die Frage ist: Was passiert, wenn du ankommst?',
+    unlockTip: 'Wende diese Woche etwas an, das du schon wei\u00dft. Nicht etwas Neues lernen. Etwas Altes tun. Und beobachte, wie dein Kopf sofort zum N\u00e4chsten springen will.'
   }
 };
 
+// =======================================
+// 7 FRAGEN — Alltagssituationen
+// =======================================
 var QUESTIONS = [
   {
-    text: 'Sonntagabend. Die neue Woche steht bevor.',
-    context: 'Was meldet sich zuerst \u2014 nicht was du denkst, was du f\u00fchlst.',
+    text: 'Sonntagabend. Die Woche steht bevor. Was meldet sich zuerst?',
+    context: 'Nicht was du denkst \u2014 was du sp\u00fcrst.',
     answers: [
-      { text: '\u201eIch muss diese Woche wirklich zeigen, was ich kann.\u201c', scores: { beweis: 3 } },
-      { text: '\u201eHoffentlich gibt es keinen Stress mit jemandem.\u201c', scores: { harmonie: 3 } },
-      { text: 'Ich gehe meinen Kalender durch und plane alles durch.', scores: { kontrolle: 3 } },
-      { text: 'Ein diffuses Unbehagen \u2014 ich sollte mehr aus meiner Zeit machen.', scores: { mehr: 3 } }
+      { text: 'Ich checke, was diese Woche auf Social Media trending ist.', scores: { spam: 3, insta: 1 } },
+      { text: 'Ich plane alles durch \u2014 wenn ich die Kontrolle habe, ist alles gut.', scores: { karriere: 2, leit: 1 } },
+      { text: 'Ein diffuses Unbehagen: Ich sollte weiter sein als ich bin.', scores: { upgrade: 3 } },
+      { text: 'Erleichterung, dass nichts Unerwartetes ansteht.', scores: { safe: 3 } }
     ]
   },
   {
-    text: 'Jemand kritisiert dich \u2014 nicht b\u00f6sartig, aber direkt.',
-    context: 'Die erste Reaktion, bevor du nachdenkst.',
+    text: 'Jemand stellt deine Meinung \u00f6ffentlich in Frage. Was denkst du wirklich?',
+    context: 'Erste Reaktion. Ungeschminkt.',
     answers: [
-      { text: 'Ich suche sofort nach Beweisen, dass die Kritik falsch ist.', scores: { beweis: 3 } },
-      { text: 'Ich frage mich, ob die Person jetzt sauer auf mich ist.', scores: { harmonie: 3 } },
-      { text: 'Ich analysiere die Kritik und plane, wie ich es besser mache.', scores: { kontrolle: 3 } },
-      { text: 'Ich ziehe mich innerlich zur\u00fcck und m\u00f6chte verschwinden.', scores: { unsichtbar: 3 } }
+      { text: '\u201eIch muss da jetzt clever kontern, sonst sehe ich dumm aus.\u201c', scores: { meta: 2, leit: 1 } },
+      { text: '\u201eAm besten ich sage nichts, das gibt nur \u00c4rger.\u201c', scores: { safe: 2, insta: 1 } },
+      { text: '\u201eDie Person hat keine Ahnung von meinem Fachgebiet.\u201c', scores: { karriere: 2, leit: 1 } },
+      { text: '\u201eVielleicht hat sie recht \u2014 ich muss mich da nochmal reinlesen.\u201c', scores: { upgrade: 2, light: 1 } }
     ]
   },
   {
-    text: 'Du scrollst durch Social Media. Was l\u00f6st den st\u00e4rksten Stich aus?',
+    text: 'Du scrollst durch deinen Feed. Was l\u00f6st den st\u00e4rksten Stich aus?',
     context: '',
     answers: [
-      { text: 'Jemand in meinem Alter hat beruflich mehr erreicht.', scores: { beweis: 3 } },
-      { text: 'Eine Person zeigt sich mutig und verletzlich \u2014 das k\u00f6nnte ich nie.', scores: { unsichtbar: 3 } },
-      { text: 'Ein neuer Kurs, ein neues Buch, ein neuer Ansatz \u2014 ich muss das kennen.', scores: { mehr: 3 } },
-      { text: 'Jemand teilt eine kontroverse Meinung \u2014 ich denke: \u201eDas gibt \u00c4rger.\u201c', scores: { harmonie: 2, unsichtbar: 1 } }
+      { text: 'Jemand hat den Post gemacht, den du machen wolltest. Nur besser.', scores: { spam: 2, insta: 2 } },
+      { text: 'Eine Person teilt ihre \u201eTransformation\u201c \u2014 und du f\u00fchlst dich zur\u00fcckgeblieben.', scores: { upgrade: 3, light: 1 } },
+      { text: 'Jemand zeigt sich verletzlich \u2014 und bekommt daf\u00fcr 10.000 Likes.', scores: { meta: 2, insta: 1 } },
+      { text: 'Ein Kollege feiert seine Bef\u00f6rderung und du denkst: \u201eSchon wieder einer.\u201c', scores: { karriere: 3 } }
     ]
   },
   {
-    text: 'Dein Chef gibt dir ein gro\u00dfes Kompliment vor dem ganzen Team.',
-    context: 'Was denkst du wirklich?',
-    answers: [
-      { text: '\u201eEndlich sieht jemand, wie viel ich leiste.\u201c', scores: { beweis: 3 } },
-      { text: '\u201eOh Gott, jetzt schauen alle auf mich.\u201c', scores: { unsichtbar: 3 } },
-      { text: '\u201eNett, aber was ist das n\u00e4chste Projekt?\u201c', scores: { mehr: 3 } },
-      { text: '\u201eHoffentlich sind die Kollegen jetzt nicht neidisch.\u201c', scores: { harmonie: 3 } }
-    ]
-  },
-  {
-    text: 'Ein Freund sagt kurzfristig ein Treffen ab.',
-    context: 'Ehrlich \u2014 nicht die erwachsene Version.',
-    answers: [
-      { text: '\u201eHab ich was falsch gemacht?\u201c', scores: { harmonie: 2, beweis: 1 } },
-      { text: '\u201eTypisch. Auf mich nimmt niemand R\u00fccksicht.\u201c \u2014 aber ich sage nichts.', scores: { unsichtbar: 2, harmonie: 1 } },
-      { text: 'Ich nutze die freie Zeit sofort f\u00fcr etwas Produktives.', scores: { mehr: 2, kontrolle: 1 } },
-      { text: 'Erleichterung \u2014 jetzt muss ich nicht performen.', scores: { beweis: 2, unsichtbar: 1 } }
-    ]
-  },
-  {
-    text: 'Du hast eine richtig gute Idee in einem Meeting.',
+    text: 'Du hast eine Idee, die wirklich gut ist. Was passiert damit?',
     context: '',
     answers: [
-      { text: 'Ich verpacke sie so, dass sie nicht zu selbstbewusst klingt.', scores: { unsichtbar: 3 } },
-      { text: 'Ich bringe sie ein und achte genau darauf, wie sie ankommt.', scores: { beweis: 3 } },
-      { text: 'Ich warte, ob jemand anderes etwas \u00c4hnliches sagt.', scores: { harmonie: 2, unsichtbar: 1 } },
-      { text: 'Ich sage sie, aber in meinem Kopf ist schon die n\u00e4chste, bessere Idee.', scores: { mehr: 3 } }
+      { text: 'Ich baue ein Framework drum herum. Und dann noch eins.', scores: { meta: 3, upgrade: 1 } },
+      { text: 'Ich poste sie sofort \u2014 Ideen, die keiner sieht, existieren nicht.', scores: { spam: 3, insta: 1 } },
+      { text: 'Ich analysiere erst, ob sie \u201erealistisch\u201c ist \u2014 und verwerfe sie dann.', scores: { safe: 3 } },
+      { text: 'Ich schlafe dr\u00fcber, mache am n\u00e4chsten Tag weiter, und dann kommt die n\u00e4chste Idee.', scores: { upgrade: 2, spam: 1 } }
     ]
   },
   {
-    text: 'Samstag, nichts geplant. Was passiert?',
+    text: 'Wie reagierst du, wenn dir jemand sagt: \u201eDu musst nicht immer so viel machen\u201c?',
     context: '',
     answers: [
-      { text: 'Ich finde irgendwas zu tun \u2014 ich kann nicht einfach nichts machen.', scores: { mehr: 3 } },
-      { text: 'Ich melde mich bei jemandem, schaue, wer etwas braucht.', scores: { harmonie: 3 } },
-      { text: 'Ich plane die n\u00e4chste Woche, r\u00e4ume auf, strukturiere.', scores: { kontrolle: 3 } },
-      { text: 'Ich genie\u00dfe es \u2014 und f\u00fchle mich gleichzeitig schuldig.', scores: { beweis: 2, mehr: 1 } }
+      { text: '\u201eJa, ich wei\u00df.\u201c (Und mache heimlich weiter wie bisher.)', scores: { karriere: 3, upgrade: 1 } },
+      { text: '\u201eDas sagen Leute, die nicht verstehen, worum es geht.\u201c', scores: { leit: 2, meta: 1 } },
+      { text: '\u201eStimmt eigentlich \u2014 ich buche mal ein Retreat.\u201c', scores: { light: 3, upgrade: 1 } },
+      { text: 'Ich sage nichts, aber der Satz trifft etwas in mir.', scores: { safe: 2, insta: 1 } }
     ]
   },
   {
-    text: 'Du machst einen Fehler bei der Arbeit. Was ist der lauteste Gedanke?',
-    context: '',
+    text: 'Was w\u00fcrde dich am meisten kosten, wenn du es morgen verlierst?',
+    context: 'Ehrlich. Nicht die richtige Antwort.',
     answers: [
-      { text: '\u201eJetzt denken alle, ich bin nicht gut genug.\u201c', scores: { beweis: 3 } },
-      { text: '\u201eIch h\u00e4tte es besser pr\u00fcfen m\u00fcssen.\u201c', scores: { kontrolle: 3 } },
-      { text: '\u201eBitte lass es niemand gemerkt haben.\u201c', scores: { unsichtbar: 3 } },
-      { text: '\u201eIch muss das sofort wiedergutmachen, sonst gibt es Stimmung.\u201c', scores: { harmonie: 3 } }
+      { text: 'Meine Follower / mein Netzwerk / meine Reichweite.', scores: { spam: 2, insta: 2, leit: 1 } },
+      { text: 'Meinen Job-Titel / meine Position / meinen Status.', scores: { karriere: 3, leit: 1 } },
+      { text: 'Mein Wissen / meine Expertise / meinen Vorsprung.', scores: { meta: 2, upgrade: 2 } },
+      { text: 'Meine Routine / meine Sicherheit / mein gewohntes Leben.', scores: { safe: 3, light: 1 } }
     ]
   },
   {
-    text: 'Du liest \u00fcber eine neue Methode zur Selbstentwicklung.',
-    context: '',
-    answers: [
-      { text: '\u201eDas muss ich ausprobieren. Vielleicht ist das der Schl\u00fcssel.\u201c', scores: { mehr: 3 } },
-      { text: '\u201eKlingt gut, aber wie passe ich das in meinen Plan ein?\u201c', scores: { kontrolle: 3 } },
-      { text: '\u201eSolche Dinge funktionieren bei anderen, nicht bei mir.\u201c', scores: { unsichtbar: 3 } },
-      { text: '\u201eDamit kann ich beweisen, dass ich auf dem richtigen Weg bin.\u201c', scores: { beweis: 3 } }
-    ]
-  },
-  {
-    text: 'In einer Beziehung: Wann f\u00fchlst du dich am unsichersten?',
-    context: 'Romantisch, Freundschaft, Familie \u2014 alles z\u00e4hlt.',
-    answers: [
-      { text: 'Wenn ich nicht wei\u00df, ob die andere Person zufrieden mit mir ist.', scores: { harmonie: 3 } },
-      { text: 'Wenn ich das Gef\u00fchl habe, nicht genug zu geben oder zu sein.', scores: { beweis: 3 } },
-      { text: 'Wenn Dinge unvorhersehbar werden und ich nicht planen kann.', scores: { kontrolle: 3 } },
-      { text: 'Wenn ich zu viel von mir zeige.', scores: { unsichtbar: 3 } }
-    ]
-  },
-  {
-    text: 'Wenn du ganz still bist \u2014 was ist das Grundgef\u00fchl unter allem?',
-    context: 'Keine Ablenkung. Kein Tun. Nur du.',
-    answers: [
-      { text: 'Ich bin noch nicht da, wo ich sein sollte.', scores: { mehr: 2, beweis: 1 } },
-      { text: 'Ich muss aufpassen, dass alles in Ordnung bleibt.', scores: { kontrolle: 2, harmonie: 1 } },
-      { text: 'Ich bin eigentlich gar nicht so wichtig.', scores: { unsichtbar: 3 } },
-      { text: 'Ich bin m\u00fcde vom Funktionieren.', scores: { harmonie: 2, beweis: 1 } }
-    ]
-  },
-  {
-    text: 'Stell dir vor, ein inneres Muster w\u00e4re morgen einfach weg. Welcher Satz trifft am meisten?',
+    text: 'Stell dir vor: Ein Muster w\u00e4re morgen einfach weg. Was w\u00e4re die gr\u00f6\u00dfte Erleichterung?',
     context: 'Keine richtige Antwort. Nur deine.',
     answers: [
-      { text: '\u201eIch m\u00fcsste niemandem mehr beweisen, dass ich gut genug bin.\u201c', scores: { beweis: 3 } },
-      { text: '\u201eIch k\u00f6nnte endlich sagen, was ich wirklich denke.\u201c', scores: { harmonie: 2, unsichtbar: 1 } },
-      { text: '\u201eIch k\u00f6nnte loslassen, ohne Angst, dass alles zerf\u00e4llt.\u201c', scores: { kontrolle: 3 } },
-      { text: '\u201eIch k\u00f6nnte einfach da sein \u2014 ohne etwas tun oder werden zu m\u00fcssen.\u201c', scores: { mehr: 3 } }
+      { text: '\u201eIch m\u00fcsste nicht mehr st\u00e4ndig sichtbar sein, um zu z\u00e4hlen.\u201c', scores: { spam: 2, insta: 2 } },
+      { text: '\u201eIch k\u00f6nnte aufh\u00f6ren, mich zu optimieren, und einfach sein.\u201c', scores: { upgrade: 3, light: 1 } },
+      { text: '\u201eIch k\u00f6nnte ein Risiko eingehen, ohne dass alles in mir schreit.\u201c', scores: { safe: 3 } },
+      { text: '\u201eIch k\u00f6nnte einfach was machen, statt alles zu durchdenken.\u201c', scores: { meta: 3, karriere: 1 } }
     ]
   }
 ];
@@ -351,7 +497,7 @@ var QUESTIONS = [
 // STATE
 // =======================================
 var currentQ = 0;
-var scores = { beweis: 0, harmonie: 0, kontrolle: 0, unsichtbar: 0, mehr: 0 };
+var scores = { spam: 0, leit: 0, insta: 0, light: 0, meta: 0, karriere: 0, safe: 0, upgrade: 0 };
 
 // =======================================
 // FUNCTIONS
@@ -410,10 +556,10 @@ function showProcessing() {
   document.getElementById('progressBar').style.width = '100%';
 
   var steps = [
-    { text: 'Muster werden analysiert...', detail: 'Antworten auswerten' },
-    { text: 'Dominantes Programm identifiziert.', detail: 'Archetypen abgleichen' },
-    { text: 'Exploit-Vektoren scannen...', detail: 'Wer profitiert?' },
-    { text: 'Ergebnis wird generiert.', detail: '' }
+    { text: 'Herdenmuster werden analysiert...', detail: 'Antworten auswerten' },
+    { text: 'Schaf-Typ identifiziert.', detail: 'Archetypen abgleichen' },
+    { text: 'Konditionierung scannen...', detail: 'Wer profitiert?' },
+    { text: 'Schaf-Level wird berechnet.', detail: '' }
   ];
 
   var stepIdx = 0;
@@ -426,63 +572,108 @@ function showProcessing() {
       clearInterval(interval);
       setTimeout(showResult, 400);
     }
-  }, 900);
+  }, 800);
 }
 
 function showResult() {
+  // Calculate Schaf-Level
+  var totalScore = 0;
+  var maxPossible = 0;
+  for (var key in scores) { totalScore += scores[key]; }
+  // Max possible: 7 questions * max ~4 points per question = ~28
+  maxPossible = 28;
+  var schafLevel = Math.min(Math.round((totalScore / maxPossible) * 100), 99);
+  // Ensure minimum of 20% (everyone is at least a little Schaf)
+  schafLevel = Math.max(schafLevel, 20);
+
+  // Find dominant archetype
   var sorted = Object.entries(scores).sort(function(a, b) { return b[1] - a[1]; });
   var dominantKey = sorted[0][0];
-  var program = PROGRAMS[dominantKey];
+  var schaf = SCHAFS[dominantKey];
+
+  // Find secondary archetype
+  var secondaryKey = sorted[1][0];
+  var secondarySchaf = SCHAFS[secondaryKey];
 
   document.getElementById('processing').style.display = 'none';
   document.getElementById('result').style.display = 'block';
-  document.getElementById('resultTitle').textContent = program.name;
+  document.getElementById('resultTitle').textContent = schaf.emoji + ' ' + schaf.name;
 
+  // Schaf-Level in result header (kleiner, unter dem Titel)
+  document.getElementById('schafLevelDisplay').innerHTML =
+    '<div class="schaf-level-big" id="schafNum" style="font-size:clamp(2rem,6vw,3rem);margin-bottom:4px;">0%</div>' +
+    '<div class="schaf-level-label">Schaf-Level</div>';
+
+  // Score bars for all archetypes
   var scoreBarsHtml = '<div class="score-bars">';
   sorted.forEach(function(entry, i) {
     var key = entry[0], val = entry[1];
     var pct = sorted[0][1] > 0 ? Math.round((val / sorted[0][1]) * 100) : 0;
-    var displayPct = Math.max(pct, 4);
+    var displayPct = Math.max(pct, 3);
     scoreBarsHtml += '<div class="score-bar-item ' + (i === 0 ? 'dominant' : '') + '">' +
-      '<div class="score-bar-label"><span class="name">' + PROGRAMS[key].name + '</span>' +
+      '<div class="score-bar-label"><span class="name">' + SCHAFS[key].emoji + ' ' + SCHAFS[key].name + '</span>' +
       '<span class="pct">' + pct + '%</span></div>' +
       '<div class="score-bar-track"><div class="score-bar-fill" style="width:0" data-width="' + displayPct + '%"></div></div></div>';
   });
   scoreBarsHtml += '</div>';
 
   var patternsHtml = '<ul class="pattern-list">';
-  program.patterns.forEach(function(p) { patternsHtml += '<li>' + p + '</li>'; });
+  schaf.patterns.forEach(function(p) { patternsHtml += '<li>' + p + '</li>'; });
   patternsHtml += '</ul>';
 
+  // Build share text
+  var shareText = 'Ich bin zu ' + schafLevel + '% Schaf \u2014 Typ: ' + schaf.name + '. Und du? Mach den Scan: ';
+
+  // Share Card (Screenshot-tauglich)
+  var shareCardHtml =
+    '<div class="share-card">' +
+      '<div class="share-card-brand">MetaSchaf-Scan</div>' +
+      '<div class="share-card-level" id="shareCardNum">0%</div>' +
+      '<div class="share-card-sublabel">Schaf-Level</div>' +
+      '<div class="share-card-bar-wrap">' +
+        '<div class="share-card-bar-track"><div class="share-card-bar-fill" id="shareCardBar"></div></div>' +
+        '<div class="share-card-bar-labels"><span>Freigeist</span><span>Herdentier</span></div>' +
+      '</div>' +
+      '<div class="share-card-type">' + schaf.emoji + ' ' + schaf.name + '</div>' +
+      '<div class="share-card-oneliner">' + schaf.subtitle + '</div>' +
+      '<div class="share-card-url">scan.timeandspace.online</div>' +
+      '<div class="share-card-hint">\u2191 Screenshot \u2192 teilen</div>' +
+    '</div>';
+
   var content =
+    shareCardHtml +
     '<div class="result-card">' +
-      '<h3>' + program.subtitle + '</h3>' +
-      '<p>' + program.description + '</p>' +
+      '<h3>' + schaf.subtitle + '</h3>' +
+      '<p>' + schaf.description + '</p>' +
       scoreBarsHtml +
-      '<div class="result-section"><h4>So zeigt sich das im Alltag</h4>' + patternsHtml + '</div>' +
+      '<div class="result-section"><h4>So zeigt sich das in deinem Alltag</h4>' + patternsHtml + '</div>' +
     '</div>' +
     '<div class="exploit-card">' +
       '<h3>Wer davon profitiert, dass du das nicht siehst</h3>' +
-      '<p>' + program.exploit + '</p>' +
-      '<div class="exploit-examples">' + program.exploitExamples + '</div>' +
+      '<p>' + schaf.exploit + '</p>' +
+      '<div class="exploit-examples">' + schaf.exploitExamples + '</div>' +
     '</div>' +
     '<div class="unlock-card">' +
-      '<h3>Der erste Schritt raus</h3>' +
-      '<p>' + program.unlock + '</p>' +
-      '<div class="micro-experiment"><div class="label">Dein Micro-Experiment</div><p>' + program.unlockTip + '</p></div>' +
+      '<h3>Der erste Schritt aus der Herde</h3>' +
+      '<p>' + schaf.unlock + '</p>' +
+      '<div class="micro-experiment"><div class="label">Dein Micro-Experiment</div><p>' + schaf.unlockTip + '</p></div>' +
     '</div>' +
+    (sorted[1][1] > 0 ?
+    '<div class="result-card" style="animation-delay:0.5s">' +
+      '<h3>Dein zweites Gesicht: ' + secondarySchaf.emoji + ' ' + secondarySchaf.name + '</h3>' +
+      '<p>' + secondarySchaf.subtitle + ' Dieses Muster l\u00e4uft im Hintergrund mit \u2014 nicht dominant, aber wirksam.</p>' +
+    '</div>' : '') +
     '<div class="teaser-card">' +
       '<h3>Du willst <span>tiefer</span> gehen?</h3>' +
-      '<p>Dieser Scan zeigt die Oberfl\u00e4che. Dahinter liegt ein ganzes System aus unsichtbaren Programmen. Trag dich ein \u2014 und finde heraus, welche Glaubenss\u00e4tze das Programm am Laufen halten.</p>' +
-      '<div class="email-form"><input type="email" placeholder="Deine E-Mail" id="emailInput" />' +
-      '<button onclick="submitEmail()">Weitergehen</button></div>' +
-      '<div class="form-note">Kein Spam. Nur Substanz.</div>' +
+      '<p>Dieser Scan zeigt die Oberfl\u00e4che. Dahinter liegt ein ganzes System aus Konditionierung, Angst und Fremdsteuerung. Der volle Meta-Schaf-Decoder analysiert dein Muster mit 7 Skalen \u2014 vom Konformit\u00e4ts-Score bis zum Black Mirror Index.</p>' +
+      '<a href="https://timeandspace.online" target="_blank" style="display:inline-block;background:var(--accent-color);color:#000;font-family:var(--font-system);font-weight:700;padding:14px 28px;text-decoration:none;text-transform:uppercase;letter-spacing:0.05em;font-size:0.9rem;margin-top:8px;transition:all 0.2s;">Mehr erfahren</a>' +
+      '<div class="form-note">Kommt bald. Wirklich.</div>' +
     '</div>' +
     '<div class="share-section">' +
-      '<div class="share-text">Jemand in deinem Leben sollte das auch sehen?</div>' +
+      '<div class="share-text">Jemand in deinem Leben sollte sein Schaf-Level kennen?</div>' +
       '<div class="share-buttons">' +
-        '<a class="share-btn" href="https://wa.me/?text=' + encodeURIComponent('Welches unsichtbare Programm steuert dich? Mach den Scan: ' + location.href) + '" target="_blank">WhatsApp</a>' +
-        '<button class="share-btn" onclick="copyLink()">Link kopieren</button>' +
+        '<a class="share-btn" href="https://wa.me/?text=' + encodeURIComponent(shareText + location.href) + '" target="_blank">WhatsApp</a>' +
+        '<button class="share-btn" onclick="copyLink(\'' + shareText.replace(/'/g, "\\'") + '\')">Link kopieren</button>' +
       '</div>' +
       '<span class="restart-link" onclick="restart()">Scan wiederholen</span>' +
     '</div>';
@@ -490,25 +681,36 @@ function showResult() {
   document.getElementById('resultContent').innerHTML = content;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  // Animate Schaf-Level number + Share Card
   setTimeout(function() {
+    var numEl = document.getElementById('schafNum');
+    var barEl = document.getElementById('schafBar');
+    var shareNumEl = document.getElementById('shareCardNum');
+    var shareBarEl = document.getElementById('shareCardBar');
+
+    barEl.style.width = schafLevel + '%';
+    if (shareBarEl) shareBarEl.style.width = schafLevel + '%';
+
+    var counter = 0;
+    var interval = setInterval(function() {
+      counter += 2;
+      if (counter >= schafLevel) {
+        counter = schafLevel;
+        clearInterval(interval);
+      }
+      numEl.textContent = counter + '%';
+      if (shareNumEl) shareNumEl.textContent = counter + '%';
+    }, 30);
+
+    // Animate score bars
     document.querySelectorAll('.score-bar-fill').forEach(function(bar) {
       bar.style.width = bar.dataset.width;
     });
-  }, 500);
+  }, 400);
 }
 
-function submitEmail() {
-  var email = document.getElementById('emailInput').value;
-  if (!email || email.indexOf('@') === -1) {
-    document.getElementById('emailInput').style.borderColor = 'var(--red)';
-    return;
-  }
-  var form = document.querySelector('.email-form');
-  form.innerHTML = '<p style="color: var(--accent-color); font-family: var(--font-system); font-size: 1rem; padding: 14px 0;">Du bist drin. Mehr kommt bald.</p>';
-}
-
-function copyLink() {
-  navigator.clipboard.writeText(location.href).then(function() {
+function copyLink(shareText) {
+  navigator.clipboard.writeText(shareText + location.href).then(function() {
     var btn = document.querySelectorAll('.share-btn')[1];
     btn.textContent = 'Kopiert!';
     setTimeout(function() { btn.textContent = 'Link kopieren'; }, 2000);
