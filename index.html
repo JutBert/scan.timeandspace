@@ -54,8 +54,8 @@
       <span><span class="dot"></span> 2 Minuten</span>
       <span><span class="dot"></span> Dein Schaf-Level in %</span>
     </div>
-    <button class="btn-start animate-fade-up delay-6" onclick="startScan()">
-      Scan starten <span class="arrow">&rarr;</span>
+    <button class="btn-action animate-fade-up delay-6" onclick="startScan()">
+      [ SCAN STARTEN ] <span class="arrow">&rarr;</span>
     </button>
   </div>
 </div>
@@ -602,11 +602,7 @@ function showResult() {
   // Schaf-Level in result header (kleiner, unter dem Titel)
   document.getElementById('schafLevelDisplay').innerHTML =
     '<div class="schaf-level-big" id="schafNum" style="font-size:clamp(2rem,6vw,3rem);margin-bottom:4px;">0%</div>' +
-    '<div class="schaf-level-label">Schaf-Level</div>' +
-    '<div class="schaf-level-bar-wrap">' +
-      '<div class="schaf-level-bar-track"><div class="schaf-level-bar-fill" id="schafBar"></div></div>' +
-      '<div class="schaf-level-scale"><span>Freigeist</span><span>Herdentier</span></div>' +
-    '</div>';
+    '<div class="schaf-level-label">Schaf-Level</div>';
 
   // Score bars for all archetypes
   var scoreBarsHtml = '<div class="score-bars">';
